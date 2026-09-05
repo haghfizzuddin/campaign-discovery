@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "campaign-discovery"
+version = "0.1.0"
+description = "Research engine that turns public reports of scam and fraud activity into candidate campaign relationships with structured evidence. First profile: recruitment threats."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hafizzuddin Hashim" }]
+keywords = ["threat-intelligence", "osint", "scam", "fraud", "clustering", "campaign-tracking", "recruitment-threats"]
+dependencies = [
+    "requests>=2.31",
+    "feedparser>=6.0",
+    "dnspython>=2.4",
+    "networkx>=3.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+embeddings = ["sentence-transformers>=2.2"]
+llm = ["anthropic>=0.40"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+cdisc = "campaign_discovery.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["campaign_discovery*"]
+
+[tool.setuptools.package-data]
+campaign_discovery = ["profiles/*/*.yaml", "profiles/*/README.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,718 @@
+# Profile: recruitment-threat
+#
+# Everything the engine knows about *this* theme lives here. The engine itself
+# only understands the shape: topic terms + harm terms gate relevance, lure
+# rules classify, brands are impersonated organisations, templates drive the
+# pivot queries, labels drive the report wording.
+#
+# `cdisc init` copies this file to $CDISC_HOME/profiles/recruitment-threat/ for
+# editing; the edited copy wins.
+
+name: recruitment-threat
+description: >
+  Employment and recruitment themed fraud and malware delivery: fake recruiters,
+  malicious coding assessments (Contagious Interview / BeaverTail family), task
+  scams, advance-fee job offers, identity harvesting and DPRK-style fake workers.
+
+# Wording the report and reasons use for this theme.
+labels:
+  topic: employment
+  brands: Companies impersonated
+  lure: Common lure
+  wording: recruiter/lure wording
+  contact_pivot: Search recruiter handle
+
+# Domain framing given to the optional Claude interpretation step, appended to
+# the engine's generic analyst instructions.
+llm_context: >
+  The researcher studies employment/recruitment scams: fake recruiters, malicious
+  coding assessments, task scams, advance-fee job offers, and DPRK-style fake
+  interviews or fake IT workers.
+
+# Topic context: the post must be about this theme.
+topic_terms:
+  job: 0.6
+  jobs: 0.4
+  recruiter: 1.0
+  recruiting: 0.8
+  recruitment: 0.8
+  hiring manager: 1.0
+  hiring: 0.6
+  job offer: 1.0
+  job opportunity: 0.8
+  job posting: 0.8
+  job interview: 1.0
+  interview: 0.7
+  technical interview: 1.0
+  onboarding: 0.7
+  position: 0.3
+  role: 0.2
+  salary: 0.5
+  remote job: 0.8
+  work from home: 0.7
+  freelance: 0.5
+  upwork: 0.5
+  linkedin: 0.5
+  indeed: 0.4
+  glassdoor: 0.3
+  headhunter: 0.8
+  talent acquisition: 0.9
+  hr department: 0.7
+  employment: 0.6
+  candidate: 0.5
+  applicant: 0.5
+  resume: 0.5
+  cv: 0.2
+  offer letter: 0.9
+  coding challenge: 1.0
+  coding assessment: 1.0
+  coding test: 1.0
+  take-home: 0.9
+  take home: 0.9
+  skills test: 0.8
+  skill assessment: 0.8
+  technical assessment: 1.0
+  test task: 0.9
+  trial task: 0.9
+  assignment: 0.5
+
+# Harm context: fraud / malware vocabulary.
+harm_terms:
+  scam: 1.0
+  legit: 0.5
+  legitimate: 0.4
+  scammer: 1.0
+  scammed: 1.0
+  fake: 0.6
+  fraud: 0.9
+  fraudulent: 0.9
+  phishing: 0.8
+  malware: 1.0
+  infostealer: 1.0
+  stealer: 0.8
+  backdoor: 0.8
+  rat: 0.1
+  trojan: 0.8
+  suspicious: 0.5
+  red flag: 0.8
+  red flags: 0.8
+  impersonat: 0.9
+  posing as: 0.8
+  pretending to be: 0.8
+  telegram: 0.7
+  whatsapp: 0.5
+  signal: 0.1
+  crypto: 0.5
+  cryptocurrency: 0.5
+  bitcoin: 0.5
+  usdt: 0.7
+  wallet: 0.5
+  upfront: 0.7
+  fee: 0.4
+  deposit: 0.5
+  training fee: 1.0
+  equipment: 0.4
+  check: 0.15
+  cheque: 0.5
+  gift card: 0.8
+  too good to be true: 0.9
+  never applied: 0.8
+  unsolicited: 0.7
+  clone: 0.3
+  npm: 0.4
+  node_modules: 0.5
+  obfuscated: 0.8
+  drained: 0.7
+  stolen: 0.6
+  identity theft: 0.8
+  ssn: 0.7
+  passport: 0.5
+  driver's license: 0.6
+  reshipping: 0.9
+  money mule: 1.0
+  task: 0.15
+  commission: 0.5
+  rating: 0.1
+
+campaign_terms:
+  contagious interview: 1.5
+  beavertail: 1.5
+  invisibleferret: 1.5
+  invisible ferret: 1.5
+  ottercookie: 1.5
+  otter cookie: 1.5
+  lazarus: 1.2
+  famous chollima: 1.5
+  wagemole: 1.5
+  dev#popper: 1.5
+  devpopper: 1.5
+  dprk: 1.0
+  north korea: 1.0
+  north korean: 1.0
+  pig butchering: 1.0
+  task scam: 1.2
+  fake it worker: 1.2
+  laptop farm: 1.2
+  clickfix: 1.0
+  fake interview: 1.2
+  fake recruiter: 1.5
+  job scam: 1.5
+  employment scam: 1.5
+  recruitment scam: 1.5
+  hiring scam: 1.5
+
+# Implicit weight added by venue. A post in r/Scams is about fraud even when the
+# word never appears; a post in r/recruitinghell is about employment.
+source_context:
+  "reddit:Scams": {harm: 1.5}
+  "reddit:recruitinghell": {topic: 1.0}
+  "reddit:jobs": {topic: 0.8}
+  "reddit:cscareerquestions": {topic: 0.6}
+  "reddit:remotework": {topic: 0.6}
+  "mastodon": {harm: 0.3}
+
+# Minimum relevance per source class (overrides relevance.threshold in
+# sources.yaml). Security-news feeds mention jobs and fraud in passing far more
+# often than victim forums do.
+threshold_by_source:
+  rss: 0.6
+  mastodon: 0.5
+  github: 0.5
+
+# Keywords marking a sentence as a candidate "lure" phrase.
+lure_keywords:
+  - interview
+  - assessment
+  - assignment
+  - challenge
+  - coding
+  - repository
+  - repo
+  - clone
+  - run
+  - install
+  - npm
+  - telegram
+  - whatsapp
+  - signal
+  - onboarding
+  - fee
+  - deposit
+  - payment
+  - wallet
+  - crypto
+  - equipment
+  - check
+  - training
+  - task
+  - commission
+  - offer
+  - position
+  - salary
+  - schedule
+  - resume
+  - complete
+  - before
+  - urgent
+  - immediately
+  - congratulations
+  - shortlisted
+  - selected
+
+# Deterministic lure-type classification. Score = sum of matched keyword
+# weights; highest type wins if >= min_score.
+lure_types:
+  coding_assessment_malware:
+    min_score: 1.5
+    keywords:
+      coding challenge: 1.0
+      coding assessment: 1.0
+      take-home: 0.8
+      take home: 0.8
+      technical assessment: 1.0
+      repository: 0.8
+      github: 0.5
+      bitbucket: 0.7
+      gitlab: 0.5
+      clone: 0.8
+      npm install: 1.0
+      npm: 0.5
+      node: 0.4
+      run the project: 1.0
+      run the code: 1.0
+      malware: 0.8
+      infostealer: 1.0
+      beavertail: 1.5
+      invisibleferret: 1.5
+      ottercookie: 1.5
+      contagious interview: 1.5
+  fake_recruiter_contact:
+    min_score: 1.5
+    keywords:
+      recruiter: 0.8
+      linkedin: 0.6
+      whatsapp: 0.8
+      telegram: 0.8
+      unsolicited: 0.8
+      never applied: 1.0
+      impersonat: 0.8
+      posing as: 0.8
+      fake recruiter: 1.5
+      text message: 0.6
+      sms: 0.6
+      hiring manager: 0.6
+  advance_fee:
+    min_score: 1.5
+    keywords:
+      training fee: 1.5
+      upfront: 1.0
+      deposit: 0.8
+      equipment: 0.8
+      check: 0.5
+      cheque: 0.8
+      gift card: 1.0
+      background check fee: 1.5
+      pay for: 0.6
+      wire: 0.6
+      zelle: 0.8
+      cash app: 0.8
+      reimburse: 0.8
+  task_scam:
+    min_score: 1.5
+    keywords:
+      task: 0.8
+      tasks: 0.8
+      commission: 1.0
+      rating: 0.6
+      optimization: 0.8
+      app reviews: 1.0
+      boost: 0.6
+      usdt: 1.2
+      recharge: 1.2
+      withdraw: 0.8
+      pig butchering: 1.5
+      task scam: 1.5
+  fake_it_worker:
+    min_score: 1.5
+    keywords:
+      laptop farm: 1.5
+      fake it worker: 1.5
+      wagemole: 1.5
+      famous chollima: 1.5
+      remote worker fraud: 1.5
+      dprk: 1.0
+      north korean: 1.0
+      stolen identity: 1.0
+      identity theft: 0.8
+  identity_harvest:
+    min_score: 1.5
+    keywords:
+      ssn: 1.0
+      social security: 1.0
+      passport: 0.8
+      driver's license: 1.0
+      id verification: 1.0
+      i-9: 1.0
+      w-2: 0.8
+      bank details: 1.0
+      direct deposit: 0.8
+
+# Scam-stage classification (which part of the funnel the report describes).
+stages:
+  initial_contact:
+    - reached out
+    - messaged me
+    - contacted me
+    - received an email
+    - received a message
+    - unsolicited
+    - linkedin message
+    - text message
+  screening:
+    - interview
+    - questionnaire
+    - google form
+    - typeform
+    - screening
+  assessment:
+    - coding challenge
+    - assessment
+    - assignment
+    - take home
+    - take-home
+    - test task
+    - repository
+    - clone
+  offer:
+    - offer letter
+    - job offer
+    - congratulations
+    - selected
+    - hired
+  onboarding:
+    - onboarding
+    - equipment
+    - training
+    - i-9
+    - w-2
+    - direct deposit
+    - background check
+  monetisation:
+    - fee
+    - deposit
+    - check
+    - cheque
+    - gift card
+    - wallet
+    - usdt
+    - bitcoin
+    - drained
+    - wire
+    - zelle
+  post_compromise:
+    - malware
+    - infostealer
+    - stealer
+    - wallet drained
+    - passwords
+    - keychain
+    - browser extension
+
+# Organisations commonly impersonated in this theme. Matched with canonical
+# capitalisation and only near a `brand_context_regex` cue, so "target" in prose
+# or "Google Meet" as a product do not count. Extend freely.
+brands:
+  - Kraken
+  - Binance
+  - Coinbase
+  - Crypto.com
+  - OKX
+  - Bybit
+  - KuCoin
+  - Ripple
+  - Chainlink
+  - Uniswap
+  - MetaMask
+  - OpenSea
+  - Solana Foundation
+  - Aave
+  - Robinhood
+  - PayPal
+  - Stripe
+  - Revolut
+  - Amazon
+  - Google
+  - Microsoft
+  - Apple
+  - Netflix
+  - Tesla
+  - Nvidia
+  - IBM
+  - Cisco
+  - Salesforce
+  - Adobe
+  - Shopify
+  - Spotify
+  - Airbnb
+  - Deloitte
+  - Accenture
+  - McKinsey
+  - KPMG
+  - PwC
+  - Robert Half
+  - Randstad
+  - Adecco
+  - Manpower
+  - Kelly Services
+  - TEKsystems
+  - Toptal
+  - Anthropic
+  - OpenAI
+  - Palantir
+  - Databricks
+  - Snowflake
+  - Atlassian
+  - HubSpot
+  - Dropbox
+  - Marriott
+  - Hilton
+  - Walmart
+  - Costco
+  - FedEx
+  - UPS
+  - DHL
+  - Pfizer
+  - Johnson & Johnson
+  - Aramco
+  - Chevron
+  - Exxon
+
+# A brand only counts when one of these cues appears within ~120 characters.
+brand_context_regex: 'recruit|hiring|hr\b|job|position|role|offer|interview|career|talent|employ|onboard|salary|impersonat|posing|pretend|claim|fake|scam'
+
+# Phrases blanked out before brand matching (product mentions, not employers).
+brand_exclusions:
+  - Google Meet
+  - Google Form
+  - Google Forms
+  - Google Docs
+  - Google Doc
+  - Google Voice
+  - Google Chat
+  - Google Sheets
+  - Google Drive
+  - Google Play
+  - Google search
+  - Microsoft Teams
+  - Microsoft Word
+  - Microsoft Excel
+  - Microsoft Office
+  - Microsoft 365
+  - Microsoft Defender
+  - Amazon gift
+  - Apple gift
+  - Apple ID
+  - Apple Pay
+  - Zoom call
+  - Zoom meeting
+  - PayPal invoice
+
+# Regex patterns that capture a capitalised organisation name after an
+# impersonation cue, e.g. "a recruiter from Kraken". Matches are stored as
+# low-confidence brand observables.
+brand_cue_patterns:
+  - '(?:recruiter|hr|hiring manager|talent)\s+(?:from|at|with|of)\s+([A-Z][\w.&-]+(?:\s+[A-Z][\w.&-]+){0,2})'
+  - '(?:posing|pretending|claiming)\s+(?:as|to be)(?:\s+(?:a|an|from|with))?\s+([A-Z][\w.&-]+(?:\s+[A-Z][\w.&-]+){0,2})'
+  - '(?:impersonat\w+|spoof\w+)\s+([A-Z][\w.&-]+(?:\s+[A-Z][\w.&-]+){0,2})'
+  - '(?:job|position|role|offer)\s+(?:at|with|from)\s+([A-Z][\w.&-]+(?:\s+[A-Z][\w.&-]+){0,2})'
+
+# Query templates for the pivot engine. {phrase}, {brand}, {handle} are filled in.
+pivot_templates:
+  phrase_web:
+    - '"{phrase}" recruiter'
+    - 'site:reddit.com "{phrase}"'
+  handle_web:
+    - '"@{handle}" OR "t.me/{handle}"'
+  brand_reddit:
+    - '{brand} recruiter scam'
+  brand_web:
+    - '"{brand}" "coding challenge" recruiter scam'
+
+# Lure windows that are too generic to search for.
+generic_phrases:
+  - i got a job offer
+  - is this a scam
+  - this is a scam
+  - looking for a job
+  - got an email from
+  - received an email from
+
+# Domains that are never treated as indicators (platforms, media, shorteners
+# handled elsewhere, well-known sites that appear in almost every post).
+ignore_domains:
+  - reddit.com
+  - redd.it
+  - old.reddit.com
+  - www.reddit.com
+  - i.redd.it
+  - v.redd.it
+  - preview.redd.it
+  - imgur.com
+  - i.imgur.com
+  - github.com
+  - raw.githubusercontent.com
+  - gist.github.com
+  - twitter.com
+  - x.com
+  - t.co
+  - linkedin.com
+  - www.linkedin.com
+  - facebook.com
+  - instagram.com
+  - youtube.com
+  - youtu.be
+  - google.com
+  - www.google.com
+  - docs.google.com
+  - forms.gle
+  - microsoft.com
+  - apple.com
+  - amazon.com
+  - wikipedia.org
+  - en.wikipedia.org
+  - w3.org
+  - schema.org
+  - mozilla.org
+  - creativecommons.org
+  - gravatar.com
+  - wp.com
+  - wordpress.com
+  - feedburner.com
+  - medium.com
+  - substack.com
+  - mastodon.social
+  - infosec.exchange
+  - joinmastodon.org
+  - bleepingcomputer.com
+  - www.bleepingcomputer.com
+  - krebsonsecurity.com
+  - thehackernews.com
+  - unit42.paloaltonetworks.com
+  - paloaltonetworks.com
+  - consumer.ftc.gov
+  - ftc.gov
+  - malwarebytes.com
+  - securelist.com
+  - kaspersky.com
+  - socket.dev
+  - reversinglabs.com
+  - urlhaus.abuse.ch
+  - abuse.ch
+  - threatfox.abuse.ch
+  - virustotal.com
+  - www.virustotal.com
+  - npmjs.com
+  - www.npmjs.com
+  - pypi.org
+  - nodejs.org
+  - python.org
+  - stackoverflow.com
+  - example.com
+  - example.org
+  - example.invalid
+  - justice.gov
+  - www.justice.gov
+  - mitre.org
+  - attack.mitre.org
+  - cisa.gov
+  - fbi.gov
+  - ic3.gov
+  - kasperskycontenthub.com
+  - media.kasperskycontenthub.com
+  - securelist.com
+  - cdn.jsdelivr.net
+  - cloudflare.com
+  - vercel.com
+  - archive.org
+  - web.archive.org
+  - archive.ph
+  - bit.ly
+  - tinyurl.com
+  - fsf.org
+  - gnu.org
+  - apache.org
+  - opensource.org
+  - fontawesome.com
+  - googleapis.com
+  - fonts.googleapis.com
+  - gstatic.com
+  - twimg.com
+  - fbcdn.net
+  - licdn.com
+  - redditmedia.com
+  - redditstatic.com
+  - preview.redd.it
+  - reddit.com
+  - misp-project.org
+  - github.io
+  # news and vendor sites that reports *cite* (never attacker infrastructure)
+  - wired.com
+  - nytimes.com
+  - bbc.com
+  - bbc.co.uk
+  - theguardian.com
+  - cnn.com
+  - reuters.com
+  - apnews.com
+  - forbes.com
+  - techcrunch.com
+  - theverge.com
+  - arstechnica.com
+  - zdnet.com
+  - therecord.media
+  - cyberscoop.com
+  - darkreading.com
+  - securityweek.com
+  - jamf.com
+  - moonlock.com
+  - sentinelone.com
+  - talosintelligence.com
+  - welivesecurity.com
+  - eset.com
+  - trendmicro.com
+  - crowdstrike.com
+  - proofpoint.com
+  - zscaler.com
+  - huntress.com
+  - elastic.co
+  - sophos.com
+  - fortinet.com
+  - cisco.com
+  - mandiant.com
+  - cloud.google.com
+  - blog.google
+  - cyfirma.com
+  - group-ib.com
+  - recordedfuture.com
+  - silentpush.com
+  - validin.com
+  - urlscan.io
+  - any.run
+  - hybrid-analysis.com
+  - joesandbox.com
+  - otx.alienvault.com
+  - shodan.io
+  - censys.io
+  - crt.sh
+  - whois.com
+  - who.is
+  - ipinfo.io
+  - checkmarx.com
+  - phylum.io
+  - snyk.io
+  - unit42.paloaltonetworks.com
+  - microsoft.com
+  - apple.com
+  - support.google.com
+  - play.google.com
+  - apps.apple.com
+  - chrome.google.com
+  - addons.mozilla.org
+  - ftc.gov
+  - www.ftc.gov
+  - bbb.org
+  - scamadviser.com
+  - trustpilot.com
+  - glassdoor.com
+  - indeed.com
+  - ziprecruiter.com
+  - monster.com
+  - dice.com
+  - wellfound.com
+  - lever.co
+  - greenhouse.io
+  - workday.com
+  - myworkdayjobs.com
+  - smartrecruiters.com
+  - icims.com
+  - jobvite.com
+  - bamboohr.com
+  - localhost
+  - telegram.org
+  - t.me
+  - wa.me
+  - discord.gg
+  - discord.com
+  - zoom.us
+  - calendly.com
+  - indeed.com
+  - glassdoor.com
+  - upwork.com
+  - fiverr.com
+  - gmail.com
+  - outlook.com
+  - hotmail.com
+  - yahoo.com
+  - protonmail.com
+  - proton.me
+  - icloud.com

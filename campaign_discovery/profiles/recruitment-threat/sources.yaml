@@ -1,0 +1,147 @@
+# Profile: recruitment-threat — collector, enrichment and clustering settings.
+# `cdisc init` copies this to $CDISC_HOME/profiles/recruitment-threat/ for editing.
+# Every collector can be disabled with `enabled: false`.
+
+# Sources whose items bypass the relevance gate (curated feeds, analyst input).
+trusted_sources: [urlhaus, manual]
+
+reddit:
+  # Reddit is collected through the Arctic Shift archive API (no Reddit API key
+  # needed). Full-text `query` searches are expensive on their side, so keep the
+  # subreddit x query matrix small; r/Scams is read as a firehose instead.
+  enabled: true
+  api: https://arctic-shift.photon-reddit.com/api
+  limit: 100
+  min_interval: 3.0           # seconds between Arctic Shift requests
+  max_pages: 5                # firehose pagination (100 posts per page)
+  # Subreddits where *every* post is worth scoring; no query filter applied.
+  firehose_subreddits:
+    - Scams
+  subreddits:
+    - jobs
+    - recruitinghell
+    - cscareerquestions
+    - remotework
+    - webdev
+    - CryptoCurrency
+  queries:
+    - recruiter scam
+    - fake recruiter
+    - job scam
+    - coding challenge scam
+    - interview malware
+    - telegram interview
+
+github:
+  enabled: true
+  api: https://api.github.com
+  per_page: 30
+  # Queries follow GitHub search syntax. `{since}` is replaced with an ISO date
+  # (now - lookback_days).
+  lookback_days: 30
+  repo_queries:
+    - '"coding challenge" "technical interview" created:>{since}'
+    - '"take home" assignment "interview" created:>{since}'
+    - '"skill test" crypto "interview" created:>{since}'
+    - '"assessment" "before the interview" created:>{since}'
+    - 'BeaverTail OR InvisibleFerret OR OtterCookie created:>{since}'
+    - '"contagious interview" created:>{since}'
+  fetch_readme: true
+  readme_max_per_run: 20      # unauthenticated GitHub REST allows 60 req/hour
+
+rss:
+  enabled: true
+  feeds:
+    - name: krebsonsecurity
+      url: https://krebsonsecurity.com/feed/
+    - name: bleepingcomputer
+      url: https://www.bleepingcomputer.com/feed/
+    - name: thehackernews
+      url: https://feeds.feedburner.com/TheHackersNews
+    - name: unit42
+      url: https://unit42.paloaltonetworks.com/feed/
+    - name: ftc-consumer-protection
+      url: https://www.ftc.gov/feeds/press-release-consumer-protection.xml
+    - name: malwarebytes
+      url: https://www.malwarebytes.com/blog/feed/index.xml
+    - name: securelist
+      url: https://securelist.com/feed/
+    - name: sentinellabs
+      url: https://www.sentinelone.com/labs/feed/
+    - name: talos
+      url: https://blog.talosintelligence.com/rss/
+    - name: welivesecurity
+      url: https://www.welivesecurity.com/en/rss/feed/
+    - name: reversinglabs
+      url: https://www.reversinglabs.com/blog/rss.xml
+
+mastodon:
+  enabled: true
+  # Public hashtag timelines only. Instances that require auth are skipped.
+  instances:
+    - https://mastodon.social
+    - https://infosec.exchange
+  tags:
+    - cdisc
+    - fakerecruiter
+    - scam
+    - phishing
+    - ContagiousInterview
+  limit: 40
+
+urlhaus:
+  enabled: true
+  csv_url: https://urlhaus.abuse.ch/downloads/csv_recent/
+  # Only rows whose `threat` or `tags` match one of these substrings are kept.
+  tag_filters:
+    - beavertail
+    - invisibleferret
+    - ottercookie
+    - lazarus
+    - contagious
+    - interview
+    - recruit
+    - wagemole
+    - famouschollima
+
+pivot:
+  # Auto-generated search terms are executed against these collectors.
+  enabled: true
+  max_generation: 2          # depth of the self-expanding loop
+  max_queries_per_run: 10
+  lookback_days: 180          # how far back generated queries search
+  # Subreddits searched with generated phrases. Arctic Shift requires a
+  # subreddit (or author) for full-text queries and throttles them hard, so
+  # every entry here multiplies the cost of a run. Two is a sensible default.
+  reddit_subreddits:
+    - Scams
+    - jobs
+
+enrichment:
+  dns: true
+  rdap: true
+  abusech: true               # needs ABUSECH_AUTH_KEY, skipped otherwise
+  github: true                # repo metadata + dependency manifests
+  intelowl: false             # needs INTELOWL_URL + INTELOWL_API_KEY
+  ttl_days: 7                 # re-enrich an observable after this many days
+  max_per_run: 150
+
+clustering:
+  min_cluster_size: 2
+  text_similarity_threshold: 0.30     # Jaccard on word bigrams of lure text
+  embedding_similarity_threshold: 0.78 # used only if sentence-transformers installed
+  use_embeddings: false
+  # An observable shared by more than this fraction of all cases is treated as
+  # noise (e.g. a platform domain) and not used for linking.
+  hub_fraction: 0.30
+  hub_absolute: 25
+  weak_types: [ip, nameserver, dependency]   # need 2+ kinds to link on their own
+  # Specificity of a shared feature. Confidence rises only when *independent*
+  # high-specificity features stack (see docs/evidence-model.md).
+  specificity:
+    high: [telegram, email, wallet_btc, wallet_eth, wallet_trx, sha256, sha1, md5, github_repo, url]
+    medium: [domain, github_user, phrase, wording_similarity]
+    low: [ip, nameserver, dependency, registrar]
+
+relevance:
+  threshold: 0.5
