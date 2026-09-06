@@ -122,7 +122,8 @@ def cmd_pivot(a: argparse.Namespace, conn=None) -> dict[str, int]:
         return {"regenerated": n}
     if getattr(a, "list", False):
         for r in conn.execute("SELECT id, kind, generation, status, hits, term FROM search_terms "
-                              "ORDER BY status, generation, created_at LIMIT ?", (a.limit or 200,)):
+                              "ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'manual' THEN 1 ELSE 2 END, "
+                              "priority, generation, created_at LIMIT ?", (a.limit or 200,)):
             print(f"{r['id']}  {r['kind']:<7} g{r['generation']} {r['status']:<8} hits={r['hits'] if r['hits'] is not None else '-':<4} {r['term']}")
         return {}
     st = pivot.run_pending(conn, config.sources(), limit=getattr(a, "limit", None))
@@ -278,8 +279,9 @@ def cmd_profiles(a: argparse.Namespace) -> None:
 
 def cmd_sources(a: argparse.Namespace) -> None:
     cfg = config.sources()
+    print(f"profile: {config.profile()}   trusted sources: {', '.join(cfg.get('trusted_sources') or [])}")
     for name, c in cfg.items():
-        if name in ("pivot", "enrichment", "clustering", "relevance"):
+        if name in ("pivot", "enrichment", "clustering", "relevance") or not isinstance(c, dict):
             continue
         print(f"{name:<10} enabled={c.get('enabled', True)}")
 
