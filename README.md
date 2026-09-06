@@ -96,7 +96,7 @@ Every cluster stores a list of evidence items: feature, value, specificity (high
 | `probable` | one high group, or two or more independent medium groups |
 | `possible` | anything else that still formed a cluster |
 
-The ladder stops there. Operator lineage is a separate field an analyst sets with `cdisc assess`, and the report shows both side by side. Shared infrastructure, shared code or shared wording alone do not prove operator identity, so the engine never says so. Details in [docs/evidence-model.md](docs/evidence-model.md); the working method in [docs/methodology.md](docs/methodology.md).
+The ladder stops there. Operator lineage is a separate field an analyst sets with `cdisc assess`, and the report shows both side by side. Shared infrastructure, shared code or shared wording alone do not prove operator identity, so the engine never says so. Details in [docs/evidence-model.md](docs/evidence-model.md); the working method in [docs/methodology.md](docs/methodology.md); a day-to-day walkthrough in [docs/usage.md](docs/usage.md).
 
 ## Install
 
